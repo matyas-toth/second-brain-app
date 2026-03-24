@@ -153,7 +153,7 @@ export async function POST(req: Request) {
             WAITING: "On Hold",
             DONE: "Done",
           };
-          return `Moved "${item.title}" → ${statusMap[newStatus] || newStatus}`;
+          return `Moved "${item.title}" to ${statusMap[newStatus] || newStatus}`;
         },
       },
 
@@ -173,7 +173,7 @@ export async function POST(req: Request) {
               ...(newContent && { content: newContent }),
             },
           });
-          return `Updated "${item.title}"${newTitle ? ` → "${newTitle}"` : ""}`;
+          return `Updated "${item.title}"${newTitle ? ` to "${newTitle}"` : ""}`;
         },
       },
     },
