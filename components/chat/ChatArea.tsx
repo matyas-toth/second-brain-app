@@ -68,6 +68,12 @@ function extractToolParts(message: UIMessage): ToolPart[] {
           case "archiveProject":
             label = `Archiving project`;
             break;
+          case "saveMemory":
+            label = `Saving to memory...`;
+            break;
+          case "searchMemories":
+            label = `Searching vault for "${input.query}"...`;
+            break;
         }
       }
 
@@ -244,6 +250,22 @@ function ChatInner({
     }
   };
 
+  const THINKING_OPTIONS = [
+    "Pondering", "Vibing", "Cooking", "Brewing", "Marinating", "Scheming",
+    "Manifesting", "Neurons firing", "Brain loading", "Deep diving",
+    "Thought cooking", "Mind mapping", "Touching grass", "Staring vacantly",
+    "Buffering", "Vibing hard", "Not slacking", "Totally focused",
+    "Eyes closed", "Almost there", "Enlightening"
+  ];
+
+  const [thinkingText, setThinkingText] = useState("Thinking");
+
+  useEffect(() => {
+    if (status === "submitted") {
+      setThinkingText(THINKING_OPTIONS[Math.floor(Math.random() * THINKING_OPTIONS.length)]);
+    }
+  }, [status]);
+
   // Extract tool parts from the last assistant message (active during streaming)
   const lastAssistantMsg = [...messages].reverse().find((m) => m.role === "assistant");
   const activeToolParts = lastAssistantMsg ? extractToolParts(lastAssistantMsg) : [];
@@ -360,7 +382,7 @@ function ChatInner({
                   transition={{ duration: 0.2 }}
                   className="mb-4 flex items-center gap-3"
                 >
-                  <ChatSpinner name="pulse">Thinking</ChatSpinner>
+                  <ChatSpinner name="pulse">{thinkingText}</ChatSpinner>
                 </motion.div>
               )}
             </AnimatePresence>

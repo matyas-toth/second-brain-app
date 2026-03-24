@@ -50,9 +50,9 @@ export function ChatSidebar({
         "flex h-full flex-col border-r border-border/50 bg-background transition-all duration-200",
         isMobile
           ? cn(
-              "fixed inset-y-0 left-0 z-40 w-[280px] shadow-xl",
-              isOpen ? "translate-x-0" : "-translate-x-full"
-            )
+            "fixed inset-y-0 left-0 z-40 w-[280px] shadow-xl",
+            isOpen ? "translate-x-0" : "-translate-x-full"
+          )
           : cn(isOpen ? "w-72" : "w-0 overflow-hidden border-r-0")
       )}
     >
@@ -111,7 +111,7 @@ export function ChatSidebar({
         <button
           onClick={() => onViewChange("chat")}
           className={cn(
-            "flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+            "flex-1 cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
             view === "chat"
               ? "bg-primary/10 text-primary"
               : "text-muted-foreground hover:text-foreground"
@@ -122,7 +122,7 @@ export function ChatSidebar({
         <button
           onClick={() => onViewChange("tasks")}
           className={cn(
-            "flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+            "flex-1 cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
             view === "tasks"
               ? "bg-primary/10 text-primary"
               : "text-muted-foreground hover:text-foreground"

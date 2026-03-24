@@ -2,9 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowUp02Icon } from "@hugeicons/core-free-icons";
+import { ArrowUp02Icon, BrainIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useRef, useEffect, type ChangeEvent, type FormEvent } from "react";
+import { useRef, useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { MemoriesDialog } from "@/components/memories/MemoriesDialog";
 
 interface ChatInputProps {
   input: string;
@@ -19,6 +20,7 @@ export function ChatInput({
   onSubmit,
   isStreaming,
 }: ChatInputProps) {
+  const [memoriesOpen, setMemoriesOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -82,7 +84,19 @@ export function ChatInput({
           <HugeiconsIcon className="scale-150" size={64} icon={ArrowUp02Icon} />
         </Button>
       </form>
+      <div className="max-w-2xl mx-auto flex flex-row justify-start items-center gap-2 mt-2">
+        <Button 
+          onClick={() => setMemoriesOpen(true)} 
+          className={"rounded-3xl text-muted-foreground transition-colors hover:text-foreground hover:bg-accent/5"} 
+          style={{ cornerShape: "superellipse(1.3)" } as any} 
+          variant="outline" 
+          size="sm"
+        >
+          <HugeiconsIcon className="mr-1" strokeWidth={2} icon={BrainIcon} /> Memories
+        </Button>
+      </div>
 
+      <MemoriesDialog open={memoriesOpen} onOpenChange={setMemoriesOpen} />
     </div>
   );
 }

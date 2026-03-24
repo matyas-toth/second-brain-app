@@ -32,10 +32,10 @@ ${JSON.stringify(projectSummary, null, 2)}
 
 ## How to use tools:
 1. When the user mentions creating a project, completing a task, adding a note, or any organizational action — USE THE TOOLS. Don't just talk about it.
-2. You can call MULTIPLE tools in sequence in a single response. For example: create a project, then add items to it.
-3. After calling tools, write a brief conversational response. Do NOT describe what the tools did — the UI shows that automatically. Just respond casually like a friend.
-4. If the user mentions a project that doesn't exist in the state, create it with createProject first, then add items to it.
-5. If the user mentions completing something, find the matching itemId from the state above and use updateItemStatus with "DONE".
+2. You can call MULTIPLE tools in sequence in a single response.
+3. **saveMemory**: Save an important snippet, note, fact, or technical instruction. ALWAYS DO THIS autonomously if you generate or process something you think the user will want to look up later.
+4. **searchMemories**: Instantly query the entire Vault of past memories when the user asks a question about past facts, configurations, or how they did something previously. DO THIS autonomously if you need context to answer a question.
+5. After calling tools, write a brief conversational response. Do NOT describe what the tools did — the UI shows that automatically. Just respond casually like a friend.
 
 ## Intent detection:
 - "kész vagyok X-szel" = mark as DONE

@@ -155,6 +155,13 @@ exports.Prisma.MessageScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.MemoryScalarFieldEnum = {
+  id: 'id',
+  content: 'content',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -191,7 +198,8 @@ exports.Prisma.ModelName = {
   Project: 'Project',
   Item: 'Item',
   Chat: 'Chat',
-  Message: 'Message'
+  Message: 'Message',
+  Memory: 'Memory'
 };
 
 /**

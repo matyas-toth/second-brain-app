@@ -48,3 +48,11 @@ export const updateItemContentInput = z.object({
   newTitle: z.string().optional(),
   newContent: z.string().optional(),
 });
+
+export const saveMemoryInput = z.object({
+  content: z.string().describe("The actual text snippet, fact, or note to save securely in the brain."),
+});
+
+export const searchMemoriesInput = z.object({
+  query: z.string().describe("The search query or keyword to find past notes, snippets, and facts covering this topic."),
+});

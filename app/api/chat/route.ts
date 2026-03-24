@@ -15,6 +15,8 @@ import {
   addItemInput,
   updateItemStatusInput,
   updateItemContentInput,
+  saveMemoryInput,
+  searchMemoriesInput,
 } from "@/lib/ai/schema";
 
 export const maxDuration = 60;
@@ -174,6 +176,35 @@ export async function POST(req: Request) {
             },
           });
           return `Updated "${item.title}"${newTitle ? ` to "${newTitle}"` : ""}`;
+        },
+      },
+
+      saveMemory: {
+        description: "Save an important snippet, note, or fact into the brain for later retrieval.",
+        inputSchema: saveMemoryInput,
+        execute: async ({ content }) => {
+          await prisma.memory.create({ data: { content } });
+          return `Memory saved: "${content.substring(0, 30)}..."`;
+        },
+      },
+
+      searchMemories: {
+        description: "Search the brain's Vault for past notes, facts, and snippets.",
+        inputSchema: searchMemoriesInput,
+        execute: async ({ query }) => {
+          // Intense fuzzy search using ILIKE
+          const memories = await prisma.memory.findMany({
+            where: {
+              content: { contains: query, mode: "insensitive" },
+            },
+            take: 5,
+            orderBy: { createdAt: "desc" },
+          });
+          if (memories.length === 0) {
+            return `No memories found matching "${query}".`;
+          }
+          const results = memories.map((m) => `[Date: ${m.createdAt.toISOString()}] ${m.content}`).join("\n\n");
+          return `Found ${memories.length} memories:\n\n${results}`;
         },
       },
     },
