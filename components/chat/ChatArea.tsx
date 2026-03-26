@@ -11,6 +11,8 @@ import ChatSpinner from "./ChatSpinner";
 import { AnimatePresence, motion } from "motion/react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ChatSpark01Icon } from "@hugeicons/core-free-icons";
+import { MemoizedMarkdown } from "../memoized-markdown";
+import { TaskView } from "../tasks/TaskView";
 
 interface ChatAreaProps {
   chatId: string | null;
@@ -215,6 +217,50 @@ function ChatInner({
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const [isTaskSidebarOpen, setIsTaskSidebarOpen] = useState(false);
+  const [taskSidebarWidth, setTaskSidebarWidth] = useState(350);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  useEffect(() => {
+    const savedOpen = localStorage.getItem("brain_task_sidebar_open");
+    const savedWidth = localStorage.getItem("brain_task_sidebar_width");
+    if (savedOpen !== null) setIsTaskSidebarOpen(savedOpen === "true");
+    if (savedWidth !== null) setTaskSidebarWidth(Number(savedWidth));
+  }, []);
+
+  const toggleTaskSidebar = () => {
+    const newState = !isTaskSidebarOpen;
+    setIsTaskSidebarOpen(newState);
+    localStorage.setItem("brain_task_sidebar_open", String(newState));
+  };
+
+  const handleDrag = (e: React.PointerEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startWidth = taskSidebarWidth;
+
+    const onPointerMove = (moveEvent: PointerEvent) => {
+      const deltaX = startX - moveEvent.clientX; 
+      let newWidth = startWidth + deltaX;
+      if (newWidth < 250) newWidth = 250;
+      if (newWidth > 600) newWidth = 600;
+      setTaskSidebarWidth(newWidth);
+    };
+
+    const onPointerUp = (upEvent: PointerEvent) => {
+      document.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("pointerup", onPointerUp);
+      const finalDeltaX = startX - upEvent.clientX;
+      let finalWidth = startWidth + finalDeltaX;
+      if (finalWidth < 250) finalWidth = 250;
+      if (finalWidth > 600) finalWidth = 600;
+      localStorage.setItem("brain_task_sidebar_width", String(finalWidth));
+    };
+
+    document.addEventListener("pointermove", onPointerMove);
+    document.addEventListener("pointerup", onPointerUp);
+  };
+
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
@@ -229,6 +275,7 @@ function ChatInner({
     messages: initialMessages,
     onFinish: () => {
       onChatUpdated();
+      setRefreshTrigger((prev) => prev + 1);
     },
   });
 
@@ -274,22 +321,35 @@ function ChatInner({
   );
 
   return (
-    <div className="flex h-full flex-col">
-      {/* Header */}
-      <div className="flex items-center gap-2 border-b border-border/50 px-4 md:px-6 py-3">
-        {!sidebarOpen && (
-          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={onToggleSidebar}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-              <path d="M2 4h12M2 8h12M2 12h12" />
-            </svg>
-          </Button>
-        )}
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="truncate text-base font-medium tracking-tight text-muted-foreground">
-            {isThinking ? "Thinking..." : "Chat"}
-          </span>
+    <div className="flex w-full h-full overflow-hidden">
+      <div className="flex h-full flex-1 flex-col min-w-[300px]">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-border/50 px-4 md:px-6 py-3">
+          <div className="flex items-center gap-2">
+            {!sidebarOpen && (
+              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={onToggleSidebar}>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                  <path d="M2 4h12M2 8h12M2 12h12" />
+                </svg>
+              </Button>
+            )}
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="truncate text-base font-medium tracking-tight text-muted-foreground">
+                {isThinking ? "Thinking..." : "Chat"}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {!isTaskSidebarOpen && (
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" onClick={toggleTaskSidebar} title="Open Tasks">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="2" width="12" height="12" rx="2" />
+                  <path d="M9 2v12" />
+                </svg>
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
 
       {/* Messages */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
@@ -317,11 +377,11 @@ function ChatInner({
                         className="mb-4 flex justify-end gap-3"
                       >
                         <div
-                          className="max-w-[85%] rounded-3xl px-4 py-2.5 text-base md:text-sm leading-relaxed whitespace-pre-wrap bg-primary text-primary-foreground"
+                          className="max-w-[85%] rounded-3xl prose prose-invert dark:prose-zinc px-4 py-2.5 text-base md:text-sm leading-relaxed whitespace-pre-wrap bg-primary text-primary-foreground"
                           style={{ cornerShape: "superellipse(1.3)" } as any}
                         >
                           {textParts.map((part, i) =>
-                            part.type === "text" ? <span key={i}>{part.text}</span> : null
+                            part.type === "text" ? <MemoizedMarkdown id={message.id} key={`${message.id}-text`} content={part.text}></MemoizedMarkdown> : null
                           )}
                         </div>
                       </motion.div>
@@ -356,11 +416,11 @@ function ChatInner({
                               className="mb-4 flex justify-start gap-3"
                             >
                               <div
-                                className="max-w-[85%] rounded-3xl px-4 py-2.5 text-base md:text-sm leading-relaxed whitespace-pre-wrap bg-muted/50 text-foreground"
+                                className="max-w-[85%] prose prose-zinc dark:prose-invert rounded-3xl px-4 py-2.5 text-base md:text-sm leading-relaxed whitespace-pre-wrap bg-muted/50 text-foreground"
                                 style={{ cornerShape: "superellipse(1.3)" } as any}
                               >
                                 {textParts.map((part, i) =>
-                                  part.type === "text" ? <span key={i}>{part.text}</span> : null
+                                  part.type === "text" ? <MemoizedMarkdown id={message.id} key={`${message.id}-text`} content={part.text}></MemoizedMarkdown> : null
                                 )}
                               </div>
                             </motion.div>
@@ -390,8 +450,30 @@ function ChatInner({
         )}
       </div>
 
-      {/* Input */}
-      <ChatInput input={input} setInput={setInput} onSubmit={handleSubmit} isStreaming={isThinking} />
+        {/* Input */}
+        <ChatInput input={input} setInput={setInput} onSubmit={handleSubmit} isStreaming={isThinking} />
+      </div>
+
+      {isTaskSidebarOpen && (
+        <>
+          <div
+            onPointerDown={handleDrag}
+            className="w-1 cursor-col-resize hover:bg-primary/50 active:bg-primary transition-colors shrink-0 z-10"
+          />
+          <div
+            style={{ width: taskSidebarWidth }}
+            className="h-full shrink-0 bg-background flex flex-col overflow-hidden border-l border-border/50"
+          >
+            <TaskView
+              sidebarOpen={true}
+              onToggleSidebar={() => {}}
+              refreshTrigger={refreshTrigger}
+              isRightSidebar={true}
+              onCloseRightSidebar={toggleTaskSidebar}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }

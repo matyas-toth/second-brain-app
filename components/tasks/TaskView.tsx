@@ -33,11 +33,14 @@ interface Project {
 interface TaskViewProps {
   sidebarOpen: boolean;
   onToggleSidebar: () => void;
+  refreshTrigger?: number;
+  isRightSidebar?: boolean;
+  onCloseRightSidebar?: () => void;
 }
 
 /* ── Main View ─────────────────────────────────────────── */
 
-export function TaskView({ sidebarOpen, onToggleSidebar }: TaskViewProps) {
+export function TaskView({ sidebarOpen, onToggleSidebar, refreshTrigger = 0, isRightSidebar, onCloseRightSidebar }: TaskViewProps) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,7 +49,7 @@ export function TaskView({ sidebarOpen, onToggleSidebar }: TaskViewProps) {
       .then((r) => r.json())
       .then((d) => setProjects(d))
       .finally(() => setLoading(false));
-  }, []);
+  }, [refreshTrigger]);
 
   // Flatten all items with project context attached
   const allItems = projects.flatMap((p) =>
@@ -93,9 +96,9 @@ export function TaskView({ sidebarOpen, onToggleSidebar }: TaskViewProps) {
   return (
     <div className="flex h-full flex-col">
       {/* ── Status Bar ───────────────────────────────── */}
-      <header className="flex flex-col gap-2 border-b border-border px-4 md:px-6 py-3 md:flex-row md:items-center md:justify-between">
+      <header className="shrink-0 flex flex-col gap-2 border-b border-border px-4 md:px-6 py-3 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-3">
-          {!sidebarOpen && (
+          {!sidebarOpen && !isRightSidebar && (
             <Button
               variant="ghost"
               size="icon"
@@ -107,11 +110,24 @@ export function TaskView({ sidebarOpen, onToggleSidebar }: TaskViewProps) {
               </svg>
             </Button>
           )}
+          {isRightSidebar && onCloseRightSidebar && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-muted-foreground"
+              onClick={onCloseRightSidebar}
+              title="Close Tasks"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 4L4 12M4 4l8 8" />
+              </svg>
+            </Button>
+          )}
           <h1 className="text-base font-medium text-muted-foreground tracking-tight">
-            Mission Control
+            {isRightSidebar ? "Tasks" : "Mission Control"}
           </h1>
         </div>
-        <div className="text-xs text-muted-foreground">
+        <div className="text-xs text-muted-foreground w-full md:w-auto overflow-x-auto whitespace-nowrap hide-scrollbar">
           {now.length} active
           <span className="mx-1.5 text-border">·</span>
           {next.length} queued

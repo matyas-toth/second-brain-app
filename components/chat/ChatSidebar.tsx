@@ -11,6 +11,8 @@ import {
 import ChatSpinner from "./ChatSpinner";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AiBrain02Icon, AiBrain04Icon, BrainIcon } from "@hugeicons/core-free-icons";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 interface Chat {
   id: string;
@@ -44,6 +46,13 @@ export function ChatSidebar({
   onToggle,
   isMobile = false,
 }: ChatSidebarProps) {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <aside
       className={cn(
@@ -59,8 +68,8 @@ export function ChatSidebar({
       {/* Logo + New Chat */}
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-sm">
-            <HugeiconsIcon className="text-zinc-700" size={28} strokeWidth={1.65} icon={BrainIcon} />
+          <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 dark:bg-primary/15 text-sm">
+            <HugeiconsIcon className="text-zinc-700 dark:text-zinc-400" size={28} strokeWidth={1.65} icon={BrainIcon} />
           </div>
           <span className="text-base font-medium tracking-tight text-foreground">
             Second Brain
@@ -181,8 +190,48 @@ export function ChatSidebar({
       </ScrollArea>
 
       {/* Footer */}
-      <div className="border-t border-border/50 px-4 py-3">
-        <div className="text-[11px] text-muted-foreground/60">
+      <div className="mt-auto flex flex-col gap-3 border-t border-border/50 p-3">
+        {mounted && (
+          <div className="flex w-full items-center rounded-md border border-border/50 bg-background/50 p-0.5">
+            <button
+              onClick={() => setTheme("light")}
+              className={cn(
+                "flex flex-1 items-center justify-center rounded-sm py-1.5 text-xs transition-colors",
+                theme === "light"
+                  ? "bg-accent text-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+              )}
+              title="Light Mode"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>
+            </button>
+            <button
+              onClick={() => setTheme("system")}
+              className={cn(
+                "flex flex-1 items-center justify-center rounded-sm py-1.5 text-xs transition-colors",
+                theme === "system"
+                  ? "bg-accent text-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+              )}
+              title="System Mode"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="3" rx="2" /><line x1="8" x2="16" y1="21" y2="21" /><line x1="12" x2="12" y1="17" y2="21" /></svg>
+            </button>
+            <button
+              onClick={() => setTheme("dark")}
+              className={cn(
+                "flex flex-1 items-center justify-center rounded-sm py-1.5 text-xs transition-colors",
+                theme === "dark"
+                  ? "bg-accent text-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+              )}
+              title="Dark Mode"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
+            </button>
+          </div>
+        )}
+        <div className="text-center text-[11px] text-muted-foreground/60">
           AI-powered task management
         </div>
       </div>
