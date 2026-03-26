@@ -9,6 +9,8 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { buildSystemPrompt } from "@/lib/ai/prompt";
 import { getProjectColor } from "@/lib/colors";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import {
   createProjectInput,
   archiveProjectInput,
@@ -22,10 +24,29 @@ import {
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const { messages, chatId }: { messages: UIMessage[]; chatId: string } =
     await req.json();
 
-  const systemPrompt = await buildSystemPrompt();
+  const userId = session.user.id;
+  const systemPrompt = await buildSystemPrompt(userId);
+
+  // Verify chat ownership
+  if (chatId) {
+    const chat = await prisma.chat.findUnique({
+      where: { id: chatId, userId },
+    });
+    if (!chat) {
+      return new Response("Not Found", { status: 404 });
+    }
+  }
 
   // Get the last user message content
   const lastUserMessage = messages.filter((m) => m.role === "user").pop();
@@ -64,7 +85,7 @@ export async function POST(req: Request) {
         inputSchema: createProjectInput,
         execute: async ({ projectName, emoji, description }) => {
           const existing = await prisma.project.findUnique({
-            where: { name: projectName },
+            where: { userId_name: { userId, name: projectName } },
           });
           if (existing) {
             await prisma.project.update({
@@ -79,6 +100,7 @@ export async function POST(req: Request) {
               emoji,
               description,
               color: getProjectColor(),
+              userId,
             },
           });
           return `Created project ${emoji || ""} ${projectName}`.trim();
@@ -91,13 +113,14 @@ export async function POST(req: Request) {
         inputSchema: archiveProjectInput,
         execute: async ({ projectId }) => {
           const project = await prisma.project.findUnique({
-            where: { id: projectId },
+            where: { id: projectId, userId },
           });
+          if (!project) return "Error: Project not found or unauthorized";
           await prisma.project.update({
             where: { id: projectId },
             data: { isActive: false },
           });
-          return `Archived project ${project?.name || projectId}`;
+          return `Archived project ${project.name}`;
         },
       },
 
@@ -114,10 +137,10 @@ export async function POST(req: Request) {
           dueDate,
         }) => {
           const project = await prisma.project.findUnique({
-            where: { name: projectName },
+            where: { userId_name: { userId, name: projectName } },
           });
           if (!project) {
-            return `Error: Project "${projectName}" not found`;
+            return `Error: Project "${projectName}" not found or unauthorized`;
           }
           await prisma.item.create({
             data: {
@@ -140,11 +163,11 @@ export async function POST(req: Request) {
           "Change the status of an existing item. Use when the user says they completed, started, or paused something.",
         inputSchema: updateItemStatusInput,
         execute: async ({ itemId, newStatus }) => {
-          const item = await prisma.item.findUnique({
-            where: { id: itemId },
+          const item = await prisma.item.findFirst({
+            where: { id: itemId, project: { userId } },
             include: { project: true },
           });
-          if (!item) return `Error: Item not found`;
+          if (!item) return `Error: Item not found or unauthorized`;
           await prisma.item.update({
             where: { id: itemId },
             data: { status: newStatus },
@@ -164,10 +187,10 @@ export async function POST(req: Request) {
           "Update the title or content of an existing item.",
         inputSchema: updateItemContentInput,
         execute: async ({ itemId, newTitle, newContent }) => {
-          const item = await prisma.item.findUnique({
-            where: { id: itemId },
+          const item = await prisma.item.findFirst({
+            where: { id: itemId, project: { userId } },
           });
-          if (!item) return `Error: Item not found`;
+          if (!item) return `Error: Item not found or unauthorized`;
           await prisma.item.update({
             where: { id: itemId },
             data: {
@@ -183,7 +206,7 @@ export async function POST(req: Request) {
         description: "Save an important snippet, note, or fact into the brain for later retrieval.",
         inputSchema: saveMemoryInput,
         execute: async ({ content }) => {
-          await prisma.memory.create({ data: { content } });
+          await prisma.memory.create({ data: { content, userId } });
           return `Memory saved: "${content.substring(0, 30)}..."`;
         },
       },
@@ -195,6 +218,7 @@ export async function POST(req: Request) {
           // Intense fuzzy search using ILIKE
           const memories = await prisma.memory.findMany({
             where: {
+              userId,
               content: { contains: query, mode: "insensitive" },
             },
             take: 5,

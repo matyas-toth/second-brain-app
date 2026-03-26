@@ -10,9 +10,11 @@ import {
 } from "@/components/ui/tooltip";
 import ChatSpinner from "./ChatSpinner";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { AiBrain02Icon, AiBrain04Icon, BrainIcon } from "@hugeicons/core-free-icons";
+import { BrainIcon } from "@hugeicons/core-free-icons";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { useSession, signOut } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 interface Chat {
   id: string;
@@ -48,10 +50,22 @@ export function ChatSidebar({
 }: ChatSidebarProps) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const { data: session } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleSignOut = async () => {
+    await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/login");
+        },
+      },
+    });
+  };
 
   return (
     <aside
@@ -99,7 +113,6 @@ export function ChatSidebar({
             </TooltipTrigger>
             <TooltipContent side="right">New Chat</TooltipContent>
           </Tooltip>
-          {/* Mobile close button */}
           {isMobile && (
             <Button
               variant="ghost"
@@ -192,43 +205,66 @@ export function ChatSidebar({
       {/* Footer */}
       <div className="mt-auto flex flex-col gap-3 border-t border-border/50 p-3">
         {mounted && (
-          <div className="flex w-full items-center rounded-md border border-border/50 bg-background/50 p-0.5">
-            <button
-              onClick={() => setTheme("light")}
-              className={cn(
-                "flex flex-1 items-center justify-center rounded-sm py-1.5 text-xs transition-colors",
-                theme === "light"
-                  ? "bg-accent text-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-              )}
-              title="Light Mode"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>
-            </button>
-            <button
-              onClick={() => setTheme("system")}
-              className={cn(
-                "flex flex-1 items-center justify-center rounded-sm py-1.5 text-xs transition-colors",
-                theme === "system"
-                  ? "bg-accent text-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-              )}
-              title="System Mode"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="3" rx="2" /><line x1="8" x2="16" y1="21" y2="21" /><line x1="12" x2="12" y1="17" y2="21" /></svg>
-            </button>
-            <button
-              onClick={() => setTheme("dark")}
-              className={cn(
-                "flex flex-1 items-center justify-center rounded-sm py-1.5 text-xs transition-colors",
-                theme === "dark"
-                  ? "bg-accent text-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-              )}
-              title="Dark Mode"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
-            </button>
+          <div className="flex flex-col gap-3">
+            {session?.user && (
+              <div className="flex items-center gap-3 px-1 py-1">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary ring-1 ring-primary/20">
+                  {session.user.name?.split(" ").map(n => n[0]).join("").toUpperCase() || "U"}
+                </div>
+                <div className="flex flex-1 flex-col overflow-hidden">
+                  <span className="truncate text-xs font-medium text-foreground">{session.user.name}</span>
+                  <span className="truncate text-[10px] text-muted-foreground">{session.user.email}</span>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  onClick={handleSignOut}
+                  title="Sign out"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" x2="9" y1="12" y2="12" /></svg>
+                </Button>
+              </div>
+            )}
+            
+            <div className="flex w-full items-center rounded-md border border-border/50 bg-background/50 p-0.5">
+              <button
+                onClick={() => setTheme("light")}
+                className={cn(
+                  "flex flex-1 items-center justify-center rounded-sm py-1.5 text-xs transition-colors",
+                  theme === "light"
+                    ? "bg-accent text-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                )}
+                title="Light Mode"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>
+              </button>
+              <button
+                onClick={() => setTheme("system")}
+                className={cn(
+                  "flex flex-1 items-center justify-center rounded-sm py-1.5 text-xs transition-colors",
+                  theme === "system"
+                    ? "bg-accent text-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                )}
+                title="System Mode"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="3" rx="2" /><line x1="8" x2="16" y1="21" y2="21" /><line x1="12" x2="12" y1="17" y2="21" /></svg>
+              </button>
+              <button
+                onClick={() => setTheme("dark")}
+                className={cn(
+                  "flex flex-1 items-center justify-center rounded-sm py-1.5 text-xs transition-colors",
+                  theme === "dark"
+                    ? "bg-accent text-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                )}
+                title="Dark Mode"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
+              </button>
+            </div>
           </div>
         )}
         <div className="text-center text-[11px] text-muted-foreground/60">

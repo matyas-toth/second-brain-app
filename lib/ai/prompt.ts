@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
 
-export async function buildSystemPrompt(): Promise<string> {
+export async function buildSystemPrompt(userId: string): Promise<string> {
   const projects = await prisma.project.findMany({
-    where: { isActive: true },
+    where: { userId, isActive: true },
     include: {
       items: {
         where: { status: { not: "DONE" } },
