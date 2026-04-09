@@ -19,6 +19,7 @@ import {
   updateItemContentInput,
   saveMemoryInput,
   searchMemoriesInput,
+  editProjectInput,
 } from "@/lib/ai/schema";
 
 export const maxDuration = 60;
@@ -229,6 +230,29 @@ export async function POST(req: Request) {
           }
           const results = memories.map((m) => `[Date: ${m.createdAt.toISOString()}] ${m.content}`).join("\n\n");
           return `Found ${memories.length} memories:\n\n${results}`;
+        },
+      },
+
+      editProject: {
+        description: "Modify an existing project's metadata (name, emoji, description, color). Use this when the user wants to rename a project or update its appearance.",
+        inputSchema: editProjectInput,
+        execute: async ({ projectId, newName, newEmoji, newDescription, newColor }) => {
+          const project = await prisma.project.findUnique({
+            where: { id: projectId, userId },
+          });
+          if (!project) return "Error: Project not found or unauthorized";
+
+          const updated = await prisma.project.update({
+            where: { id: projectId },
+            data: {
+              ...(newName && { name: newName }),
+              ...(newEmoji && { emoji: newEmoji }),
+              ...(newDescription && { description: newDescription }),
+              ...(newColor && { color: newColor }),
+            },
+          });
+
+          return `Updated project ${updated.emoji || ""} ${updated.name}`.trim();
         },
       },
     },

@@ -15,11 +15,13 @@ export async function GET() {
   const projects = await prisma.project.findMany({
     where: {
       userId: session.user.id,
+      isActive: true,
     },
     orderBy: [{ isActive: "desc" }, { updatedAt: "desc" }],
     include: {
       items: {
         orderBy: { createdAt: "desc" },
+
       },
     },
   });

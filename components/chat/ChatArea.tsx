@@ -240,7 +240,7 @@ function ChatInner({
     const startWidth = taskSidebarWidth;
 
     const onPointerMove = (moveEvent: PointerEvent) => {
-      const deltaX = startX - moveEvent.clientX; 
+      const deltaX = startX - moveEvent.clientX;
       let newWidth = startWidth + deltaX;
       if (newWidth < 250) newWidth = 250;
       if (newWidth > 600) newWidth = 600;
@@ -351,104 +351,104 @@ function ChatInner({
           </div>
         </div>
 
-      {/* Messages */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto">
-        {messages.length === 0 && !isThinking ? (
-          <div className="flex h-full flex-row items-center justify-center gap-3 px-4">
-            <HugeiconsIcon size={32} className="text-muted-foreground" icon={ChatSpark01Icon} />
-            <p className="text-sm text-muted-foreground">Dump your thoughts here to get started...</p>
-          </div>
-        ) : (
-          <div className="mx-auto max-w-2xl px-3 md:px-0 py-4 md:py-6">
-            <AnimatePresence initial={false}>
-              {messages.map((message) => {
-                const toolParts = extractToolParts(message);
-                const textParts = message.parts.filter((p) => p.type === "text");
-                const isLastAssistant = message === lastAssistantMsg;
+        {/* Messages */}
+        <div ref={scrollRef} className="flex-1 overflow-y-auto">
+          {messages.length === 0 && !isThinking ? (
+            <div className="flex h-full flex-row items-center justify-center gap-3 px-4">
+              <HugeiconsIcon size={32} className="text-muted-foreground" icon={ChatSpark01Icon} />
+              <p className="text-sm text-muted-foreground">Dump your thoughts here to get started...</p>
+            </div>
+          ) : (
+            <div className="mx-auto max-w-2xl px-3 md:px-0 py-4 md:py-6">
+              <AnimatePresence initial={false}>
+                {messages.map((message) => {
+                  const toolParts = extractToolParts(message);
+                  const textParts = message.parts.filter((p) => p.type === "text");
+                  const isLastAssistant = message === lastAssistantMsg;
 
-                return (
-                  <div key={message.id}>
-                    {/* User bubble OR assistant text bubble */}
-                    {message.role === "user" ? (
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="mb-4 flex justify-end gap-3"
-                      >
-                        <div
-                          className="max-w-[85%] rounded-3xl prose prose-invert dark:prose-zinc px-4 py-2.5 text-base md:text-sm leading-relaxed whitespace-pre-wrap bg-primary text-primary-foreground"
-                          style={{ cornerShape: "superellipse(1.3)" } as any}
+                  return (
+                    <div key={message.id}>
+                      {/* User bubble OR assistant text bubble */}
+                      {message.role === "user" ? (
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="mb-4 flex justify-end gap-3"
                         >
-                          {textParts.map((part, i) =>
-                            part.type === "text" ? <MemoizedMarkdown id={message.id} key={`${message.id}-text`} content={part.text}></MemoizedMarkdown> : null
-                          )}
-                        </div>
-                      </motion.div>
-                    ) : (
-                      <>
-                        {/* Tool call notifications — above the text bubble */}
-                        {toolParts.length > 0 && (
-                          <div className="mb-2 ml-1">
-                            {isLastAssistant && isThinking ? (
-                              <ToolCallStack
-                                toolParts={toolParts}
-                                isFinished={false}
-                              />
-                            ) : (
-                              /* For finished messages in history, show completed tools briefly or not */
-                              <ToolCallStack
-                                toolParts={toolParts}
-                                isFinished={true}
-                              />
+                          <div
+                            className="max-w-[85%] rounded-3xl prose prose-invert dark:prose-zinc px-4 py-2.5 text-base md:text-sm leading-relaxed whitespace-pre-wrap bg-primary text-primary-foreground"
+                            style={{ cornerShape: "superellipse(1.3)" } as any}
+                          >
+                            {textParts.map((part, i) =>
+                              part.type === "text" ? <MemoizedMarkdown id={message.id} key={`${message.id}-text`} content={part.text}></MemoizedMarkdown> : null
                             )}
                           </div>
-                        )}
-
-                        {/* Assistant text */}
-                        {textParts.some(
-                          (p) => p.type === "text" && (p as { text: string }).text.length > 0
-                        ) && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ duration: 0.2 }}
-                              className="mb-4 flex justify-start gap-3"
-                            >
-                              <div
-                                className="max-w-[85%] prose prose-zinc dark:prose-invert rounded-3xl px-4 py-2.5 text-base md:text-sm leading-relaxed whitespace-pre-wrap bg-muted/50 text-foreground"
-                                style={{ cornerShape: "superellipse(1.3)" } as any}
-                              >
-                                {textParts.map((part, i) =>
-                                  part.type === "text" ? <MemoizedMarkdown id={message.id} key={`${message.id}-text`} content={part.text}></MemoizedMarkdown> : null
-                                )}
-                              </div>
-                            </motion.div>
+                        </motion.div>
+                      ) : (
+                        <>
+                          {/* Tool call notifications — above the text bubble */}
+                          {toolParts.length > 0 && (
+                            <div className="mb-2 ml-1">
+                              {isLastAssistant && isThinking ? (
+                                <ToolCallStack
+                                  toolParts={toolParts}
+                                  isFinished={false}
+                                />
+                              ) : (
+                                /* For finished messages in history, show completed tools briefly or not */
+                                <ToolCallStack
+                                  toolParts={toolParts}
+                                  isFinished={true}
+                                />
+                              )}
+                            </div>
                           )}
-                      </>
-                    )}
-                  </div>
-                );
-              })}
-            </AnimatePresence>
 
-            {/* Thinking indicator — only when no tool calls and no text yet */}
-            <AnimatePresence>
-              {isThinking && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className="mb-4 flex items-center gap-3"
-                >
-                  <ChatSpinner name="pulse">{thinkingText}</ChatSpinner>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
-      </div>
+                          {/* Assistant text */}
+                          {textParts.some(
+                            (p) => p.type === "text" && (p as { text: string }).text.length > 0
+                          ) && (
+                              <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="mb-4 flex justify-start gap-3"
+                              >
+                                <div
+                                  className="max-w-[85%] prose prose-zinc dark:prose-invert rounded-3xl px-4 py-2.5 text-base md:text-sm leading-relaxed whitespace-pre-wrap bg-muted/50 text-foreground"
+                                  style={{ cornerShape: "superellipse(1.3)" } as any}
+                                >
+                                  {textParts.map((part, i) =>
+                                    part.type === "text" ? <MemoizedMarkdown id={message.id} key={`${message.id}-text`} content={part.text}></MemoizedMarkdown> : null
+                                  )}
+                                </div>
+                              </motion.div>
+                            )}
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </AnimatePresence>
+
+              {/* Thinking indicator — only when no tool calls and no text yet */}
+              <AnimatePresence>
+                {isThinking && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.2 }}
+                    className="mb-4 flex items-center gap-3"
+                  >
+                    <ChatSpinner name="pulse">{thinkingText}</ChatSpinner>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
 
         {/* Input */}
         <ChatInput input={input} setInput={setInput} onSubmit={handleSubmit} isStreaming={isThinking} />
@@ -466,7 +466,7 @@ function ChatInner({
           >
             <TaskView
               sidebarOpen={true}
-              onToggleSidebar={() => {}}
+              onToggleSidebar={() => { }}
               refreshTrigger={refreshTrigger}
               isRightSidebar={true}
               onCloseRightSidebar={toggleTaskSidebar}

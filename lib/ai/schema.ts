@@ -56,3 +56,11 @@ export const saveMemoryInput = z.object({
 export const searchMemoriesInput = z.object({
   query: z.string().describe("The search query or keyword to find past notes, snippets, and facts covering this topic."),
 });
+
+export const editProjectInput = z.object({
+  projectId: z.string().describe("The ID of the project to revise"),
+  newName: z.string().optional().describe("The updated name for the project"),
+  newEmoji: z.string().optional().describe("A new emoji to represent the project visually"),
+  newDescription: z.string().optional().describe("A revised project brief or description"),
+  newColor: z.string().optional().describe("Hex color for branding the project"),
+});

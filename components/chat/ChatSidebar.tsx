@@ -212,12 +212,12 @@ export function ChatSidebar({
                   {session.user.name?.split(" ").map(n => n[0]).join("").toUpperCase() || "U"}
                 </div>
                 <div className="flex flex-1 flex-col overflow-hidden">
-                  <span className="truncate text-xs font-medium text-foreground">{session.user.name}</span>
-                  <span className="truncate text-[10px] text-muted-foreground">{session.user.email}</span>
+                  <span className="truncate text-sm font-medium text-foreground">{session.user.name}</span>
+
                 </div>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="h-8 w-8 text-muted-foreground hover:text-foreground"
                   onClick={handleSignOut}
                   title="Sign out"
@@ -226,7 +226,7 @@ export function ChatSidebar({
                 </Button>
               </div>
             )}
-            
+
             <div className="flex w-full items-center rounded-md border border-border/50 bg-background/50 p-0.5">
               <button
                 onClick={() => setTheme("light")}
