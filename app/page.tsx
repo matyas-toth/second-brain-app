@@ -376,14 +376,14 @@ function useHeroDemo() {
     : totalScenes.current === 0
       ? INITIAL_TASKS
       : HERO_SCENES[
-          (sceneIdx - 1 + HERO_SCENES.length) % HERO_SCENES.length
-        ].tasks;
+        (sceneIdx - 1 + HERO_SCENES.length) % HERO_SCENES.length
+      ].tasks;
 
   const prevReply =
     totalScenes.current > 0
       ? HERO_SCENES[
-          (sceneIdx - 1 + HERO_SCENES.length) % HERO_SCENES.length
-        ].reply
+        (sceneIdx - 1 + HERO_SCENES.length) % HERO_SCENES.length
+      ].reply
       : null;
 
   return { scene, phase, typed, taskState, prevReply, sceneIdx };
@@ -408,21 +408,21 @@ function Navbar({ session }: { session: any }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-10 py-3 transition-all duration-300",
+        "fixed mx-auto container mt-4 rounded-full top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-4 pr-6! py-1 transition-all duration-700 ease-in-out",
         scrolled &&
-          "bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-sm"
+        "bg-background/80 w-4xl backdrop-blur-xl border-b border-border/50 shadow-[0_0_100px_#00000044]"
       )}
     >
-      <div className="flex items-center gap-2.5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
+      <div className="flex items-center gap-1">
+        <div className="flex h-16 w-16 items-center justify-center rounded-xl">
           <HugeiconsIcon
             icon={BrainIcon}
-            size={18}
+            size={48}
             strokeWidth={1.8}
             className="text-foreground"
           />
         </div>
-        <span className="text-sm font-medium tracking-tight text-foreground">
+        <span className="text-3xl font-medium tracking-tighter text-foreground">
           Second Brain
         </span>
       </div>
@@ -430,8 +430,8 @@ function Navbar({ session }: { session: any }) {
         {session ? (
           <Link href="/dashboard">
             <Button
-              size="sm"
-              className="rounded-full px-5 text-sm font-medium"
+              size="lg"
+              className="rounded-full px-5 text-lg font-medium"
             >
               Dashboard
             </Button>
@@ -441,16 +441,16 @@ function Navbar({ session }: { session: any }) {
             <Link href="/login">
               <Button
                 variant="ghost"
-                size="sm"
-                className="text-sm font-medium text-muted-foreground"
+                size="lg"
+                className="text-lg font-medium rounded-full text-muted-foreground"
               >
                 Login
               </Button>
             </Link>
             <Link href="/register">
               <Button
-                size="sm"
-                className="rounded-full px-5 text-sm font-medium"
+                size="lg"
+                className="rounded-full px-5 text-lg font-medium"
               >
                 Build My Brain
               </Button>
@@ -470,20 +470,20 @@ function HeroSection({ session }: { session: any }) {
   const ctaHref = session ? "/dashboard" : "/register";
   const ctaText = session
     ? "Go to Dashboard"
-    : "Build My Second Brain — Free";
+    : "Build My Second Brain for Free";
 
   return (
     <section className="relative min-h-[100dvh] flex items-center pt-20 pb-16">
       <div className="container mx-auto px-6">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
           {/* Left: Copy */}
-          <ScrollReveal className="flex-1 max-w-2xl">
+          <ScrollReveal className="flex-1 max-w-3xl">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight font-medium tracking-tighter">
               Stop Managing Tasks.
               <br />
               <span className="tracking-tight">Just Say What You Did.</span>
             </h1>
-            <p className="text-lg md:text-2xl font-medium tracking-tight text-muted-foreground mt-6 md:mt-8">
+            <p className="text-lg md:text-2xl font-medium max-w-xl tracking-tight text-muted-foreground mt-6 md:mt-8">
               Your AI second brain for solopreneurs. Chat naturally. Projects
               organize themselves.
             </p>
@@ -533,14 +533,8 @@ function HeroDemoArea() {
     <div className="relative flex flex-col lg:block w-full gap-4 lg:h-[430px]">
       {/* Chat Card */}
       <motion.div
-        animate={{ y: [-6, 6] }}
-        transition={{
-          repeat: Infinity,
-          repeatType: "reverse",
-          duration: 5,
-          ease: "easeInOut",
-        }}
-        className="lg:absolute lg:top-0 lg:left-0 w-full lg:w-[300px] z-10"
+
+        className="lg:absolute lg:top-0 lg:left-0 w-full lg:w-[350px] z-10"
       >
         <HeroChatCard
           scene={scene}
@@ -552,16 +546,15 @@ function HeroDemoArea() {
 
       {/* Task Card */}
       <motion.div
-        animate={{ y: [4, -4] }}
-        transition={{
-          repeat: Infinity,
-          repeatType: "reverse",
-          duration: 4.2,
-          ease: "easeInOut",
-        }}
-        className="lg:absolute lg:top-20 lg:left-[200px] w-full lg:w-[270px]"
+
+        className="lg:absolute lg:top-20 lg:left-[400px] w-full lg:w-[350px] z-20"
       >
         <HeroTaskCard tasks={taskState} />
+      </motion.div>
+
+      <motion.div className="absolute w-[300px] h-[300px] border-4 border-black border-dashed animate-[spin_30s_linear_infinite] top-20 left-50 rounded-full">
+
+
       </motion.div>
     </div>
   );
@@ -581,27 +574,27 @@ function HeroChatCard({
   prevReply: string | null;
 }) {
   return (
-    <Card className="shadow-xl shadow-black/[0.04] dark:shadow-black/20 border-border/60">
-      <CardHeader className="pb-2 pt-3 px-4">
+    <Card className="shadow-xl shadow-black/[0.04] dark:shadow-black/20 border-border/60 py-3">
+      <CardHeader className="pb-2 pt-0 px-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2">
               <span className="absolute inline-flex h-2 w-2 animate-ping rounded-full bg-emerald-400 opacity-40" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
             </span>
-            <CardTitle className="text-[11px] font-medium text-muted-foreground tracking-wide uppercase">
+            <CardTitle className="text-sm font-medium text-muted-foreground tracking-wide uppercase">
               Chat
             </CardTitle>
           </div>
           <Badge
             variant="outline"
-            className="text-[9px] h-4 px-1.5 font-medium"
+            className="text-sm h-6 px-2 font-medium"
           >
             Live
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="px-4 pb-3 space-y-2 min-h-[180px] flex flex-col justify-end">
+      <CardContent className="px-4 pb-3 space-y-2 min-h-[250px] flex flex-col justify-end">
         {/* Previous reply (context) */}
         <AnimatePresence mode="popLayout">
           {prevReply && (
@@ -612,7 +605,7 @@ function HeroChatCard({
               exit={{ opacity: 0 }}
               className="flex justify-start"
             >
-              <div className="rounded-2xl bg-muted px-3 py-1.5 text-[11px] text-foreground max-w-[85%]">
+              <div className="rounded-2xl bg-muted px-3 py-1.5 text-md text-foreground max-w-[85%]">
                 {prevReply}
               </div>
             </motion.div>
@@ -622,7 +615,7 @@ function HeroChatCard({
         {/* Current user message */}
         <div className="flex justify-end">
           <div
-            className="rounded-2xl bg-primary px-3 py-1.5 text-[11px] text-primary-foreground max-w-[85%] min-h-[28px]"
+            className="rounded-2xl bg-primary px-3 py-1.5 text-md text-primary-foreground max-w-[85%] min-h-[28px]"
             style={{ cornerShape: "superellipse(1.3)" } as any}
           >
             {scene.userMsg.slice(0, typed)}
@@ -684,7 +677,7 @@ function HeroChatCard({
               className="flex justify-start"
             >
               <div
-                className="rounded-2xl bg-muted px-3 py-1.5 text-[11px] text-foreground max-w-[85%]"
+                className="rounded-2xl bg-muted px-3 py-1.5 text-md text-foreground max-w-[85%]"
                 style={{ cornerShape: "superellipse(1.3)" } as any}
               >
                 {scene.reply}
@@ -701,36 +694,21 @@ function HeroChatCard({
 
 function HeroTaskCard({ tasks }: { tasks: TaskState }) {
   return (
-    <Card className="shadow-xl shadow-black/[0.04] dark:shadow-black/20 border-border/60">
-      <CardHeader className="pb-2 pt-3 px-4">
+    <Card className="shadow-xl shadow-black/[0.04] dark:shadow-black/20 border-border/60 py-4">
+      <CardHeader className="pb-2 pt-0 px-4">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-[11px] font-medium text-muted-foreground tracking-wide uppercase">
+          <CardTitle className="text-sm font-medium text-muted-foreground tracking-wide uppercase">
             Mission Control
           </CardTitle>
-          <Tabs defaultValue="tasks">
-            <TabsList className="h-6 p-0.5">
-              <TabsTrigger
-                value="tasks"
-                className="text-[9px] h-5 px-2 font-medium"
-              >
-                Tasks
-              </TabsTrigger>
-              <TabsTrigger
-                value="chat"
-                className="text-[9px] h-5 px-2 font-medium"
-              >
-                Chat
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+
         </div>
       </CardHeader>
-      <CardContent className="px-4 pb-3 min-h-[180px]">
+      <CardContent className="px-4 pb-3 min-h-[250px]">
         {/* NOW */}
         {tasks.now.length > 0 && (
           <div className="mb-3">
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-[9px] uppercase tracking-[0.15em] font-medium text-foreground">
+              <span className="text-[11px] uppercase tracking-[0.15em] font-medium text-foreground">
                 Now
               </span>
               <div className="h-px flex-1 bg-border" />
@@ -745,17 +723,17 @@ function HeroTaskCard({ tasks }: { tasks: TaskState }) {
                   layout
                   className="flex items-center gap-2 py-1"
                 >
-                  <span className="relative flex h-1.5 w-1.5 shrink-0">
+                  <span className="relative flex h-2 w-2 shrink-0">
                     <span
                       className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60"
                       style={{ backgroundColor: task.c }}
                     />
                     <span
-                      className="relative inline-flex h-1.5 w-1.5 rounded-full"
+                      className="relative inline-flex h-2 w-2 rounded-full"
                       style={{ backgroundColor: task.c }}
                     />
                   </span>
-                  <span className="text-[11px] text-foreground font-medium">
+                  <span className="text-md text-foreground font-medium">
                     {task.t}
                   </span>
                 </motion.div>
@@ -768,7 +746,7 @@ function HeroTaskCard({ tasks }: { tasks: TaskState }) {
         {tasks.next.length > 0 && (
           <div className="mb-3">
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-[9px] uppercase tracking-[0.15em] font-medium text-muted-foreground">
+              <span className="text-[11px] uppercase tracking-[0.15em] font-medium text-muted-foreground">
                 Next
               </span>
               <div className="h-px flex-1 bg-border" />
@@ -784,10 +762,10 @@ function HeroTaskCard({ tasks }: { tasks: TaskState }) {
                   className="flex items-center gap-2 py-1"
                 >
                   <span
-                    className="h-1.5 w-1.5 rounded-full shrink-0"
+                    className="h-2 w-2 rounded-full shrink-0"
                     style={{ backgroundColor: task.c }}
                   />
-                  <span className="text-[11px] text-muted-foreground">
+                  <span className="text-md text-muted-foreground">
                     {task.t}
                   </span>
                 </motion.div>
@@ -800,7 +778,7 @@ function HeroTaskCard({ tasks }: { tasks: TaskState }) {
         {tasks.done.length > 0 && (
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-[9px] uppercase tracking-[0.15em] font-medium text-muted-foreground">
+              <span className="text-[11px] uppercase tracking-[0.15em] font-medium text-muted-foreground">
                 Done
               </span>
               <div className="h-px flex-1 bg-border" />
@@ -815,8 +793,8 @@ function HeroTaskCard({ tasks }: { tasks: TaskState }) {
                   layout
                   className="flex items-center gap-2 py-1 opacity-50"
                 >
-                  <span className="h-1.5 w-1.5 rounded-full shrink-0 bg-emerald-400" />
-                  <span className="text-[11px] text-muted-foreground line-through">
+                  <span className="h-2 w-2 rounded-full shrink-0 bg-emerald-400" />
+                  <span className="text-md text-muted-foreground line-through">
                     {task.t}
                   </span>
                 </motion.div>
@@ -835,20 +813,20 @@ function HeroTaskCard({ tasks }: { tasks: TaskState }) {
 
 function ProblemStrip() {
   return (
-    <section className="py-20 md:py-28 border-t border-border/30">
+    <section className="py-20 md:py-28 ">
       <div className="container mx-auto px-6 text-center">
         <ScrollReveal>
-          <p className="text-xl md:text-2xl lg:text-3xl font-medium tracking-tight text-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl lg:text-4xl font-medium tracking-tight text-foreground max-w-4xl mx-auto leading-relaxed">
             You manage{" "}
-            <span className="text-muted-foreground">4 projects</span>.{" "}
-            <span className="text-muted-foreground">3 note apps</span>.{" "}
-            <span className="text-muted-foreground">2 task boards</span>. And
+            <span className="text-blue-400">4 projects</span>.{" "}
+            <span className="text-green-400">3 note apps</span>.{" "}
+            <span className="text-pink-400">2 task boards</span>. And
             nothing actually talks to each other.
           </p>
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-8">
+          <div className="flex flex-wrap items-center justify-center gap-6 mt-8">
             {["Context switching", "Scattered tools", "Manual organizing"].map(
               (pain, i) => (
                 <motion.div
@@ -858,7 +836,7 @@ function ProblemStrip() {
                 >
                   <Badge
                     variant="outline"
-                    className="text-sm font-medium px-4 py-1.5 text-muted-foreground"
+                    className="text-lg font-medium px-4 py-4 text-muted-foreground"
                   >
                     {pain}
                   </Badge>
@@ -881,10 +859,10 @@ function HowItWorks() {
     <section id="how-it-works" className="py-20 md:py-28">
       <div className="container mx-auto px-6">
         <ScrollReveal className="text-center mb-14">
-          <Badge variant="outline" className="mb-4 font-medium text-xs">
+          <Badge variant="outline" className="mb-4 font-medium text-lg py-4 px-6">
             How it works
           </Badge>
-          <h2 className="text-3xl md:text-4xl font-medium tracking-tighter">
+          <h2 className="text-3xl md:text-6xl font-medium tracking-tighter mt-4">
             Three steps. Zero setup.
           </h2>
         </ScrollReveal>
@@ -892,68 +870,68 @@ function HowItWorks() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Column 1: Talk */}
           <ScrollReveal delay={0}>
-            <Card className="h-full border-border/60">
+            <Card className="h-full border-border/60 flex flex-col justify-between">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center text-xs font-medium text-foreground">
+                  <div className="h-9 w-9 rounded-md bg-primary/10 flex items-center justify-center text-2xl font-medium text-foreground">
                     1
                   </div>
-                  <CardTitle className="text-base font-medium">Talk</CardTitle>
+                  <CardTitle className="text-2xl font-medium">Talk</CardTitle>
                 </div>
                 <MiniChatInput />
               </CardHeader>
-              <CardContent>
+              <CardFooter>
                 <CardDescription className="text-sm font-medium leading-relaxed">
                   Dump your thoughts, updates, decisions. In plain language.
                   Like texting a friend who happens to be insanely organized.
                 </CardDescription>
-              </CardContent>
+              </CardFooter>
             </Card>
           </ScrollReveal>
 
           {/* Column 2: It Organizes */}
           <ScrollReveal delay={0.15}>
-            <Card className="h-full border-border/60">
+            <Card className="h-full border-border/60 flex flex-col justify-between">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center text-xs font-medium text-foreground">
+                  <div className="h-9 w-9 rounded-md bg-primary/10 flex items-center justify-center text-2xl font-medium text-foreground">
                     2
                   </div>
-                  <CardTitle className="text-base font-medium">
+                  <CardTitle className="text-2xl font-medium">
                     It Organizes
                   </CardTitle>
                 </div>
                 <ToolCallSequence />
               </CardHeader>
-              <CardContent>
+              <CardFooter>
                 <CardDescription className="text-sm font-medium leading-relaxed">
                   Projects, tasks, notes, ideas — auto-categorized and
                   structured by AI. You never touch a dropdown or kanban column.
                 </CardDescription>
-              </CardContent>
+              </CardFooter>
             </Card>
           </ScrollReveal>
 
           {/* Column 3: You Execute */}
           <ScrollReveal delay={0.3}>
-            <Card className="h-full border-border/60">
+            <Card className="h-full border-border/60 flex flex-col justify-between">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center text-xs font-medium text-foreground">
+                  <div className="h-9 w-9 rounded-md bg-primary/10 flex items-center justify-center text-2xl font-medium text-foreground">
                     3
                   </div>
-                  <CardTitle className="text-base font-medium">
+                  <CardTitle className="text-2xl font-medium">
                     You Execute
                   </CardTitle>
                 </div>
                 <MiniTaskBoard />
               </CardHeader>
-              <CardContent>
+              <CardFooter>
                 <CardDescription className="text-sm font-medium leading-relaxed">
                   See what&apos;s live, what&apos;s next, what&apos;s done. Your
                   mission control updates itself. Zero input needed.
                 </CardDescription>
-              </CardContent>
+              </CardFooter>
             </Card>
           </ScrollReveal>
         </div>
@@ -1014,12 +992,12 @@ function MiniChatInput() {
   return (
     <div
       ref={ref}
-      className="flex items-center gap-2 rounded-2xl border border-border/50 bg-muted/30 px-3 py-2"
+      className="flex items-center gap-2 rounded-2xl border border-border/50 bg-muted/30 px-3 py-2 h-12"
     >
-      <span className="text-xs text-foreground flex-1 min-h-[1em]">
+      <span className="text-lg text-foreground flex-1 min-h-[1em]">
         {text}
       </span>
-      <span className="inline-block w-[1.5px] h-3.5 bg-foreground/50 animate-pulse shrink-0" />
+
     </div>
   );
 }
@@ -1034,7 +1012,7 @@ function ToolCallSequence() {
   ];
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1.5 ">
       {tools.map((tool, i) => (
         <motion.div
           key={i}
@@ -1046,10 +1024,11 @@ function ToolCallSequence() {
         >
           <HugeiconsIcon
             icon={CheckmarkCircle02Icon}
-            size={12}
+            size={16}
+            strokeWidth={2.2}
             className="text-muted-foreground shrink-0"
           />
-          <span className="text-[11px] text-muted-foreground">{tool}</span>
+          <span className="text-md text-muted-foreground">{tool}</span>
         </motion.div>
       ))}
     </div>
@@ -1086,7 +1065,7 @@ function MiniTaskBoard() {
           <div className="flex items-center gap-2 mb-1">
             <span
               className={cn(
-                "text-[9px] uppercase tracking-[0.15em] font-medium",
+                "text-[11px] uppercase tracking-[0.15em] font-medium",
                 section.accent ? "text-foreground" : "text-muted-foreground"
               )}
             >
@@ -1103,25 +1082,25 @@ function MiniTaskBoard() {
               )}
             >
               {item.pulse ? (
-                <span className="relative flex h-1.5 w-1.5 shrink-0">
+                <span className="relative flex h-2 w-2 shrink-0">
                   <span
                     className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60"
                     style={{ backgroundColor: item.color }}
                   />
                   <span
-                    className="relative inline-flex h-1.5 w-1.5 rounded-full"
+                    className="relative inline-flex h-2 w-2 rounded-full"
                     style={{ backgroundColor: item.color }}
                   />
                 </span>
               ) : (
                 <span
-                  className="h-1.5 w-1.5 rounded-full shrink-0"
+                  className="h-2 w-2 rounded-full shrink-0"
                   style={{ backgroundColor: item.color }}
                 />
               )}
               <span
                 className={cn(
-                  "text-[11px]",
+                  "text-[16px]",
                   (item as any).done
                     ? "text-muted-foreground line-through"
                     : "text-foreground"
@@ -1153,23 +1132,23 @@ function MemoryVaultSection() {
 
           {/* Right: Copy */}
           <ScrollReveal className="flex-1" delay={0.15}>
-            <Badge variant="outline" className="mb-4 font-medium text-xs">
+            <Badge variant="outline" className="mb-4 font-medium text-md px-4 py-4">
               Memory Vault
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-medium tracking-tighter mb-4">
+            <h2 className="text-3xl md:text-6xl font-medium tracking-tighter mb-4">
               Your vault remembers
               <br />
               what you forgot
             </h2>
             <p className="text-base text-muted-foreground font-medium leading-relaxed mb-8 max-w-md">
               Every API key, meeting note, project decision, config snippet.
-              Fuzzy-searchable. Instantly recalled. Never dig through Slack
+              Searchable. Instantly recalled. Never dig through Slack
               threads again.
             </p>
             <div className="flex flex-col gap-3">
               {[
                 "Auto-saved from conversations",
-                "Fuzzy search across everything",
+                "Search across everything",
                 "Never lose a decision or config again",
               ].map((feature, i) => (
                 <motion.div
@@ -1247,13 +1226,13 @@ function MemorySearchDemo() {
   };
 
   return (
-    <Card ref={ref} className="border-border/60 overflow-hidden">
+    <Card ref={ref} className="border-border/60 overflow-hidden ">
       <CardHeader className="pb-3 bg-muted/20">
         <div className="flex items-center gap-2 mb-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 text-primary">
-            <HugeiconsIcon icon={BrainIcon} size={16} />
+          <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
+            <HugeiconsIcon icon={BrainIcon} size={26} />
           </div>
-          <CardTitle className="text-sm font-medium">Vault Memories</CardTitle>
+          <CardTitle className="text-lg font-medium">Vault Memories</CardTitle>
         </div>
         <div className="relative">
           <svg
@@ -1276,7 +1255,7 @@ function MemorySearchDemo() {
           />
         </div>
       </CardHeader>
-      <CardContent className="p-3 space-y-2">
+      <CardContent className="p-4 py-0 space-y-2">
         {VAULT_MEMORIES.map((m, i) => (
           <motion.div
             key={i}
@@ -1292,7 +1271,7 @@ function MemorySearchDemo() {
                 : "border-border/50 bg-card"
             )}
           >
-            <p className="text-[11px] text-foreground leading-relaxed">
+            <p className="text-[14px] text-foreground leading-relaxed">
               {m.content}
             </p>
             <p className="mt-2 text-[9px] uppercase tracking-wider text-muted-foreground font-medium">
@@ -1314,10 +1293,10 @@ function BentoShowcase() {
     <section className="py-20 md:py-28">
       <div className="container mx-auto px-6">
         <ScrollReveal className="text-center mb-14">
-          <Badge variant="outline" className="mb-4 font-medium text-xs">
+          <Badge variant="outline" className="mb-4 font-medium text-md px-4 py-4">
             The full picture
           </Badge>
-          <h2 className="text-3xl md:text-4xl font-medium tracking-tighter">
+          <h2 className="text-3xl md:text-5xl font-medium tracking-tighter mt-4">
             Everything you need. Nothing you don&apos;t.
           </h2>
         </ScrollReveal>
@@ -1702,13 +1681,13 @@ function PricingSection({ session }: { session: any }) {
     <section className="py-20 md:py-28 border-t border-border/30">
       <div className="container mx-auto px-6">
         <ScrollReveal className="text-center mb-14">
-          <Badge variant="outline" className="mb-4 font-medium text-xs">
+          <Badge variant="outline" className="mb-4 font-medium text-md px-4 py-4">
             Pricing
           </Badge>
-          <h2 className="text-3xl md:text-4xl font-medium tracking-tighter">
+          <h2 className="text-3xl md:text-6xl font-medium tracking-tighter mt-2">
             Simple, honest pricing
           </h2>
-          <p className="text-muted-foreground font-medium mt-3 max-w-lg mx-auto">
+          <p className="text-muted-foreground font-medium mt-4 max-w-lg mx-auto">
             Start free. Upgrade when you need more thinking power.
           </p>
         </ScrollReveal>
@@ -1756,8 +1735,8 @@ function PricingSection({ session }: { session: any }) {
                     ))}
                   </div>
                 </CardContent>
-                <CardFooter className="pt-0">
-                  <Link href={ctaHref}>
+                <CardFooter className="pt-0 border-none mt-4">
+                  <Link className="w-full" href={ctaHref}>
                     <Button
                       variant={plan.variant}
                       className="w-full rounded-full font-medium"
